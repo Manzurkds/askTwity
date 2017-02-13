@@ -54,7 +54,7 @@ function onTweet() {
 				var weatherReply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + temp + ' degree Farenheit\nPresure: ' + pressure + '\nHumidity: ' + humidity + '\n#GetWeather'
 				console.log(weatherReply);
 
-				// tweetIt(weatherReply, statusId, statusIdStr);
+				tweetIt(weatherReply, statusId, statusIdStr);
 
 		});
 		}
