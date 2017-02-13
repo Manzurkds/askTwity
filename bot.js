@@ -66,7 +66,7 @@ onTweet();
 function tweetIt(text, statusId, statusIdStr) {
 	var tweet = {
 		in_reply_to_status_id: statusId,
-		in_reply_to_user_id_str: statusIdStr,
+		in_reply_to_status_id_str: statusIdStr,
 		status: text
 	}
 	console.log(tweet);
