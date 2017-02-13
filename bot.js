@@ -11,7 +11,7 @@ var config = {
 	access_token_secret:  process.env.access_token_secret
   // timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
 }
-console.log("testing github deployment");
+console.log("testing github deployment again");
 
 var T = new Twit(config);
 
