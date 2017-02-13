@@ -12,7 +12,7 @@ var T = new Twit(config);
 //Weather Bot
 
 //Setting up a user stream
-var stream = T.stream('statuses/filter', { track: 'Weather ' });
+var stream = T.stream('statuses/filter', { track: '#GetWeather ' });
 
 function onTweet() {
 	//Anytime someone tweets me
@@ -40,21 +40,21 @@ function onTweet() {
 			var humidity = '';
 
 
-			request("http://api.openweathermap.org/data/2.5/weather?q=Mumbai&APPID=10690dbc44dd8ff6a06536eef8f63727", function(error, response, body) {
+			request("http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=10690dbc44dd8ff6a06536eef8f63727", function(error, response, body) {
 
 				condition = JSON.parse(response.body).weather[0].main;
-			// console.log(condition);
-			temp = JSON.parse(response.body).main.temp;
-			// console.log(temp);
-			pressure = JSON.parse(response.body).main.pressure;
-			// console.log(pressure);
-			humidity = JSON.parse(response.body).main.humidity;
-			// console.log(humidity);
+				// console.log(condition);
+				temp = JSON.parse(response.body).main.temp;
+				// console.log(temp);
+				pressure = JSON.parse(response.body).main.pressure;
+				// console.log(pressure);
+				humidity = JSON.parse(response.body).main.humidity;
+				// console.log(humidity);
 
-			var weatherReply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + temp + ' degree Farenheit\nPresure: ' + pressure + '\nHumidity: ' + humidity + '\n#GetWeather'
-			console.log(weatherReply);
+				var weatherReply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + temp + ' degree Farenheit\nPresure: ' + pressure + '\nHumidity: ' + humidity + '\n#GetWeather'
+				console.log(weatherReply);
 
-			// tweetIt(weatherReply, statusId, statusIdStr);
+				// tweetIt(weatherReply, statusId, statusIdStr);
 
 		});
 		}
