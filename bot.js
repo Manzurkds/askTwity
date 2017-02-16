@@ -58,7 +58,7 @@ function onTweet() {
 				humidity = JSON.parse(response.body).main.humidity;
 				// console.log(humidity);
 
-				var weatherReply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + temp + ' °F\nPresure: ' + pressure + ' mb\nHumidity: ' + humidity + '%\n#GetWeather'
+				var weatherReply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + temp + ' K\nPresure: ' + pressure + ' mb\nHumidity: ' + humidity + '%\n#GetWeather'
 				console.log(weatherReply);
 
 				tweetIt(weatherReply, statusId, statusIdStr);
