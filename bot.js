@@ -47,7 +47,7 @@ function onTweet() {
 			var humidity = '';
 
 
-			request("http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=10690dbc44dd8ff6a06536eef8f63727", function(error, response, body) {
+			request("http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=" + process.env.open_weather_API, function(error, response, body) {
 
 				condition = JSON.parse(response.body).weather[0].main;
 				// console.log(condition);
@@ -57,8 +57,14 @@ function onTweet() {
 				// console.log(pressure);
 				humidity = JSON.parse(response.body).main.humidity;
 				// console.log(humidity);
+				city = JSON.parse(response.body).name;
+				// console.log(city);
 
-				var weatherReply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + temp + ' K\nPresure: ' + pressure + ' mb\nHumidity: ' + humidity + '%\n#GetWeather'
+
+				tempInCelcius = temp - 273;
+				tempInFarenheit = (tempInCelcius*9)/5 + 32;
+
+				var weatherReply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + tempInCelcius + ' °C' + tempInFarenheit + ' °F' + '\nPresure: ' + pressure + ' mb\nHumidity: ' + humidity + '%\n#GetWeather'
 				console.log(weatherReply);
 
 				tweetIt(weatherReply, statusId, statusIdStr);
