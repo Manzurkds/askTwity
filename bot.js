@@ -1,5 +1,6 @@
 console.log("bot is starting");
 
+
 var request = require('request');
 var Twit = require('twit');
 
@@ -62,9 +63,10 @@ function onTweet() {
 
 
 				tempInCelcius = temp - 273;
-				tempInCelcius.toFixed(2);
+				tempInCelcius = tempInCelcius.toFixed(2);
 				tempInFarenheit = (tempInCelcius*9)/5 + 32;
-				tempInFarenheit.toFixed(2);
+				tempInFarenheit = tempInFarenheit.toFixed(2);
+				
 
 				var weatherReply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + tempInCelcius + ' °C' + tempInFarenheit + ' °F' + '\nPresure: ' + pressure + ' mb\nHumidity: ' + humidity + '%\n#GetWeather'
 				console.log(weatherReply);
