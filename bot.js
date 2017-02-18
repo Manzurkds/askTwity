@@ -126,8 +126,6 @@ function quoteBot() {
 	//Setting up a status's stream
 	var stream = T.stream('statuses/filter', { track: quoteKeyword });
 
-
-
 	//Anytime someone tweets
 	stream.on('tweet', tweetEvent);
 
@@ -153,9 +151,9 @@ function quoteBot() {
 					getQuote();
 
 
-
 				function getQuote() {
 					var quote = JSON.parse(body)[0].content.slice(3, -5);
+					quote = quote.replace("&#8217;", "'");
 					console.log(quote);
 					var author = JSON.parse(body)[0].title.slice(0, -1);
 					console.log(author)
