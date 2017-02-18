@@ -68,10 +68,10 @@ function weatherBot() {
 
 			request("http://api.openweathermap.org/data/2.5/weather?q=" + city + "&APPID=" + config.open_weather_API, function(error, response, body) {
 
-				if(error)
-					error();
-				else
+				if(response)
 					processRequest();
+				else
+					error();
 
 
 
@@ -183,7 +183,7 @@ function quoteBot() {
 	}
 }
 
-quoteBot();
+// quoteBot();
 
 
 
