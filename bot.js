@@ -50,10 +50,11 @@ function weatherBot() {
 
 		function gotTweet() {
 			var status = eventMsg.text;
-			var city = '';
 
 			if(debug)
-				city = "Mumbai"
+				var city = "Mumbai"
+			else 
+				var city = status.slice(10, 30); //slices the city after #getweather to use in our request call
 				
 
 			var statusId = eventMsg.id;
