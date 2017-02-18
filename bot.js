@@ -54,7 +54,7 @@ function weatherBot() {
 			if(debug)
 				var city = "Mumbai"
 			else 
-				var city = status.slice(10, 30); //slices the city after #getweather to use in our request call
+				var city = status.slice(12, 28); //slices the city after #getweather to use in our request call
 				
 
 			var statusId = eventMsg.id;
