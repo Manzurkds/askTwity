@@ -4,7 +4,7 @@ console.log("AskTwity has started");
 var request = require('request');
 var Twit = require('twit');
 
-var debug = false;
+var debug = true;
 
 if(debug) {
     var config = require('./config');
@@ -146,21 +146,32 @@ function quoteBot() {
 			var temp = ''
 			var humidity = ''
 
+			requestCall();
 
-			request("https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1", function(error, response, body) {
+
+			function requestCall() {
+				request("https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1", function(error, response, body) {
 					getQuote();
 
 
 				function getQuote() {
-					var quote = JSON.parse(body)[0].content.slice(3, -5);
-					quote = quote.replace("&#8217;", "'");
-					console.log(quote);
+					var quote = JSON.parse(body)[0].content;
+					quote = quote.replace(/&#8217;/g, "'");
+					quote = quote.replace(/&#8216;/g, "'");
+					quote = quote.replace(/&#8220;/g, '"');
+					quote = quote.replace(/&#8221;/g, '"');
+					quote = quote.replace(/&#8211;/g, '_');
+					quote = quote.replace(/<[^>]+>/g, '');
+					// console.log(quote);
 					var author = JSON.parse(body)[0].title.slice(0, -1);
-					console.log(author)
+					// console.log(author)
 					var reply = '@' + from + '\n' + quote + '\n— ' + author +'\n#RandomQuote'
 					console.log(reply);
 
-					if(!debug)
+
+					if(reply.length>140)
+						requestCall();
+					else if(!debug)
 						tweetIt(reply, statusId, statusIdStr);
 
 				}
@@ -174,6 +185,7 @@ function quoteBot() {
 				// }
 
 		});
+			}
 		}
 	}
 }
