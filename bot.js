@@ -183,7 +183,7 @@ function quoteBot() {
 	}
 }
 
-// quoteBot();
+quoteBot();
 
 
 
