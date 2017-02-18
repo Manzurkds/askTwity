@@ -7,9 +7,10 @@ var Twit = require('twit');
 var debug = false;
 
 if(debug) {
-    var config = require('./config');
-    var weatherKeyword = 'apple';
-    var quoteKeyword = 'apple';
+    var config = require('./config')
+    var weatherKeyword = 'apple'
+    var quoteKeyword = 'apple'
+    var pnrKeyword = 'apple'
 }
 else {
 	var config = {
@@ -20,8 +21,9 @@ else {
 		open_weather_API: 	  process.env.open_weather_API
   // timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
 }
-var weatherKeyword = '#GetWeather ';
-var quoteKeyword = '#RandomQuote';
+var weatherKeyword = '#GetWeather '
+var quoteKeyword = '#RandomQuote'
+var pnrKeyword = '#getPNR'
 }
 
 var T = new Twit(config);
@@ -48,10 +50,10 @@ function weatherBot() {
 
 		function gotTweet() {
 			var status = eventMsg.text;
+			var city = '';
+
 			if(debug)
-				var city = "Mumbai"
-			else
-				var city = status.slice(12, 28);
+				city = "Mumbai"
 				
 
 			var statusId = eventMsg.id;
@@ -68,11 +70,11 @@ function weatherBot() {
 				if(error)
 					error();
 				else
-					getWeather();
+					processRequest();
 
 
 
-				function getWeather() {
+				function processRequest() {
 					
 					condition = JSON.parse(response.body).weather[0].main;
 					// console.log(condition);
@@ -117,7 +119,9 @@ function weatherBot() {
 	}
 }
 
-// weatherBot();
+weatherBot();
+
+
 
 
 
@@ -135,6 +139,7 @@ function quoteBot() {
 		if(eventMsg.user.screen_name != ('ask_twity' || 'AskTwity'))
 			gotTweet();
 
+
 		function gotTweet() {
 			var status = eventMsg.text;
 
@@ -142,19 +147,14 @@ function quoteBot() {
 			var statusIdStr = eventMsg.id_str;
 			var from = eventMsg.user.screen_name;
 
-			var condition = ''
-			var temp = ''
-			var humidity = ''
-
 			requestCall();
 
 
 			function requestCall() {
 				request("https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1", function(error, response, body) {
-					getQuote();
+					processRequest();
 
-
-				function getQuote() {
+				function processRequest() {
 					var quote = JSON.parse(body)[0].content;
 					quote = quote.replace(/&#8217;/g, "'");
 					quote = quote.replace(/&#8216;/g, "'");
@@ -176,14 +176,6 @@ function quoteBot() {
 
 				}
 
-				// function error() {
-				// 	console.log("There was some error: ");
-				// 	console.log(error);
-				// 	var reply = '@' + from + 'Sorry, there seems to be some error'
-				// 	if(!debug)
-				// 		tweetIt(reply, statusId, statusIdStr);
-				// }
-
 		});
 			}
 		}
@@ -191,6 +183,74 @@ function quoteBot() {
 }
 
 quoteBot();
+
+
+
+
+
+function pnrBot() {
+		//PNR Bot
+	//Setting up a status's stream
+	var stream = T.stream('statuses/filter', { track: pnrKeyword });
+
+	//Anytime someone tweets
+	stream.on('tweet', tweetEvent);
+
+
+	function tweetEvent(eventMsg) {
+
+		if(eventMsg.user.screen_name != ('ask_twity' || 'AskTwity'))
+			gotTweet();
+
+		function gotTweet() {
+			var status = eventMsg.text;
+
+			var statusId = eventMsg.id;
+			var statusIdStr = eventMsg.id_str;
+			var from = eventMsg.user.screen_name;
+
+			var pnr = '';
+
+			if(debug)
+				pnr = '8355016394'
+
+
+
+			requestCall();
+
+
+			function requestCall() {
+				var data = {
+					"X-Mashape-Key": "Sc76wnwIkwmshTWqGn9DGqNw7tvmp1qDC6BjsnQdK4IU3ZdCJZ",
+					"Accept": "application/json"
+				}
+
+				request.post("https://indianrailways.p.mashape.com/findstations.php?station=delhi", data, function(result) {
+					console.log(result.status, result.headers, result.body);
+
+				function processRequest() {
+				
+					// console.log(quote);
+					var author = JSON.parse(body)[0].title.slice(0, -1);
+					// console.log(author)
+					var reply = '@' + from + '\n' + quote + '\n— ' + author +'\n#RandomQuote'
+					console.log(reply);
+
+
+					if(reply.length>140)
+						requestCall();
+					else if(!debug)
+						tweetIt(reply, statusId, statusIdStr);
+
+				}
+
+		});
+			}
+		}
+	}
+}
+
+// pnrBot();
 
 
 
