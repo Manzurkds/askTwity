@@ -109,7 +109,7 @@ function weatherBot() {
 
 				function error() {
 					console.log(error);
-					var reply = '@' + from + 'Sorry, there seems to be some error'
+					var reply = '@' + from + ' Sorry, there seems to be some error'
 					if(!debug)
 						tweetIt(reply, statusId, statusIdStr);
 				}
