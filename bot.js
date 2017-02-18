@@ -157,9 +157,9 @@ function quoteBot() {
 				function getQuote() {
 					var quote = JSON.parse(body)[0].content.slice(3, -5);
 					console.log(quote);
-					var author = JSON.parse(body)[0].title;
+					var author = JSON.parse(body)[0].title.slice(0, -1);
 					console.log(author)
-					var reply = '@' + from + '\n' + quote + '\n— ' + author +'%\n#RandomQuote'
+					var reply = '@' + from + '\n' + quote + '\n— ' + author +'\n#RandomQuote'
 					console.log(reply);
 
 					if(!debug)
