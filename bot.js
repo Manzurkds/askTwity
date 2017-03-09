@@ -45,7 +45,7 @@ function weatherBot() {
 
 	function tweetEvent(eventMsg) {
 		
-		if(eventMsg.user.screen_name != ('ask_twity' || 'AskTwity'))
+		if(eventMsg.user.screen_name != ('AskTwity' || 'ask_twity'))
 			gotTweet();
 
 		function gotTweet() {
@@ -137,7 +137,7 @@ function quoteBot() {
 
 	function tweetEvent(eventMsg) {
 
-		if(eventMsg.user.screen_name != ('ask_twity' || 'AskTwity'))
+		if(eventMsg.user.screen_name != ('AskTwity' || 'ask_twity'))
 			gotTweet();
 
 
@@ -200,7 +200,7 @@ function pnrBot() {
 
 	function tweetEvent(eventMsg) {
 
-		if(eventMsg.user.screen_name != ('ask_twity' || 'AskTwity'))
+		if(eventMsg.user.screen_name != ('AskTwity' || 'ask_twity'))
 			gotTweet();
 
 		function gotTweet() {
