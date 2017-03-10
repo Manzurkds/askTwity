@@ -45,7 +45,7 @@ function weatherBot() {
 
 	function tweetEvent(eventMsg) {
 		
-		if(eventMsg.user.screen_name != ('AskTwity' || 'ask_twity'))
+		if(eventMsg.user.screen_name != 'AskTwity' && eventMsg.user.screen_name != 'ask_twity')
 			gotTweet();
 
 		function gotTweet() {
