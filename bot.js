@@ -6,12 +6,19 @@ var Twit = require('twit');
 
 var debug = true;
 
-if(debug) {
+if(debug == true) {
     var config = require('./config')
     var weatherKeyword = 'apple'
     var quoteKeyword = 'apple'
     var pnrKeyword = 'apple'
     console.log("running in debug mode")
+}
+else if(debug == "almost"){
+	var config = require('./config')
+	var weatherKeyword = '#GetWeather '
+	var quoteKeyword = '#RandomQuote'
+	var pnrKeyword = '#getPNR'
+    console.log("running in almost ready mode")
 }
 else {
 	var config = {
@@ -25,8 +32,9 @@ else {
 var weatherKeyword = '#GetWeather '
 var quoteKeyword = '#RandomQuote'
 var pnrKeyword = '#getPNR'
-console.log("running in production mode")
+console.log("running in prod mode")
 }
+
 
 var T = new Twit(config);
 
