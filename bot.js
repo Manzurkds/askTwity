@@ -21,11 +21,11 @@ else {
 		access_token_secret:  process.env.access_token_secret,
 		open_weather_API: 	  process.env.open_weather_API
   // timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
-  	console.log("running in production mode")
 }
 var weatherKeyword = '#GetWeather '
 var quoteKeyword = '#RandomQuote'
 var pnrKeyword = '#getPNR'
+console.log("running in production mode")
 }
 
 var T = new Twit(config);
