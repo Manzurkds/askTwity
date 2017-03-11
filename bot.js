@@ -11,6 +11,7 @@ if(debug) {
     var weatherKeyword = 'apple'
     var quoteKeyword = 'apple'
     var pnrKeyword = 'apple'
+    console.log("running in debug mode")
 }
 else {
 	var config = {
@@ -20,6 +21,7 @@ else {
 		access_token_secret:  process.env.access_token_secret,
 		open_weather_API: 	  process.env.open_weather_API
   // timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+  	console.log("running in production mode")
 }
 var weatherKeyword = '#GetWeather '
 var quoteKeyword = '#RandomQuote'
