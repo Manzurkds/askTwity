@@ -4,7 +4,7 @@ console.log("AskTwity has started");
 var request = require('request');
 var Twit = require('twit');
 
-var debug = false;
+var debug = true;
 
 if(debug == true) {
     var config = require('./config')
@@ -27,12 +27,12 @@ else {
 		access_token:         process.env.access_token,
 		access_token_secret:  process.env.access_token_secret,
 		open_weather_API: 	  process.env.open_weather_API
-  // timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
-}
-var weatherKeyword = '#GetWeather '
-var quoteKeyword = '#RandomQuote'
-var pnrKeyword = '#getPNR'
-console.log("running in prod mode")
+  	// timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+	}
+	var weatherKeyword = '#GetWeather '
+	var quoteKeyword = '#RandomQuote'
+	var pnrKeyword = '#getPNR'
+	console.log("running in prod mode")
 }
 
 
@@ -54,8 +54,9 @@ function weatherBot() {
 
 
 	function tweetEvent(eventMsg) {
-		
-		if(eventMsg.user.screen_name != 'AskTwity' && eventMsg.user.screen_name != 'ask_twity')
+		let twitterName = eventMsg.user.screen_name;
+
+		if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds')
 			gotTweet();
 
 		function gotTweet() {
@@ -69,7 +70,7 @@ function weatherBot() {
 
 			var statusId = eventMsg.id;
 			var statusIdStr = eventMsg.id_str;
-			var from = eventMsg.user.screen_name;
+			var from = twitterName;
 
 			var condition = ''
 			var temp = ''
@@ -106,6 +107,9 @@ function weatherBot() {
 
 					if(!debug)
 						tweetIt(reply, statusId, statusIdStr);
+					else {
+						console.log(reply, statusId, statusIdStr);
+					}
 
 
 					function toCelsiusfromKelvin(temp) {
@@ -147,7 +151,9 @@ function quoteBot() {
 
 	function tweetEvent(eventMsg) {
 
-		if(eventMsg.user.screen_name != ('AskTwity' || 'ask_twity'))
+		let twitterName = eventMsg.user.screen_name;
+		
+		if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds')
 			gotTweet();
 
 
@@ -184,6 +190,9 @@ function quoteBot() {
 						requestCall();
 					else if(!debug)
 						tweetIt(reply, statusId, statusIdStr);
+					else {
+						console.log(reply, statusId, statusIdStr);
+					}
 
 				}
 
@@ -210,7 +219,9 @@ function pnrBot() {
 
 	function tweetEvent(eventMsg) {
 
-		if(eventMsg.user.screen_name != ('AskTwity' || 'ask_twity'))
+		let twitterName = eventMsg.user.screen_name;
+		
+		if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds')
 			gotTweet();
 
 		function gotTweet() {
@@ -252,6 +263,9 @@ function pnrBot() {
 						requestCall();
 					else if(!debug)
 						tweetIt(reply, statusId, statusIdStr);
+					else {
+						tweetIt(reply, statusId, statusIdStr);
+					}
 
 				}
 
