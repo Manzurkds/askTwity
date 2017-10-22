@@ -4,7 +4,7 @@ console.log("AskTwity has started");
 var request = require('request');
 var Twit = require('twit');
 
-var debug = true;
+var debug = 'almost';
 
 if(debug == true) {
     var config = require('./config')
@@ -39,25 +39,53 @@ else {
 var T = new Twit(config);
 
 
+var weatherStream = T.stream('statuses/filter', { track: weatherKeyword });
+weatherStream.on('tweet', weatherBot);
+
+var quoteStream = T.stream('statuses/filter', { track: quoteKeyword });
+quoteStream.on('tweet', quoteBot);
+
+// var pnrStream = T.stream('statuses/filter', { track: pnrKeyword });
+// pnrStream.on('tweet', pnrBot);
 
 
-function weatherBot() {
-	//Weather Bot
+function tweetIt(text, statusId, statusIdStr) {
 
-	//Setting up a status's stream
-	var stream = T.stream('statuses/filter', { track: weatherKeyword });
+	var tweet = {
+		in_reply_to_status_id: statusId,
+		in_reply_to_status_id_str: statusIdStr,
+		status: text
+	}
+	console.log("Tweet Object is: ", tweet);
+
+	if(debug === false || debug === 'almost') {
+		T.post('statuses/update', tweet, tweeted);
+	
+		function tweeted(err, data, response) {
+			if (err) {
+				console.log(err);
+				console.log(data);
+			} else {
+				console.log(data);
+			}
+		}
+	}
+}
+
+function error(error, statusId, statusIdStr) {
+	console.log(error);
+	var reply = '@' + from + ' Sorry, there seems to be some error';
+		
+	tweetIt(reply, statusId, statusIdStr);
+}
 
 
+function weatherBot(eventMsg) {
 
-	//Anytime someone tweets
-	stream.on('tweet', tweetEvent);
-
-
-	function tweetEvent(eventMsg) {
 		let twitterName = eventMsg.user.screen_name;
 
-		if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds')
-			gotTweet();
+		if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds') gotTweet();
+		else console.log("It was just me!")
 
 		function gotTweet() {
 			var status = eventMsg.text;
@@ -82,20 +110,15 @@ function weatherBot() {
 				if(response)
 					processRequest();
 				else
-					error();
-
+					error(error, statusId, statusIdStr);
 
 
 				function processRequest() {
 					
 					condition = JSON.parse(response.body).weather[0].main;
-					// console.log(condition);
 					temp = JSON.parse(response.body).main.temp;
-					// console.log(temp);
 					humidity = JSON.parse(response.body).main.humidity;
-					// console.log(humidity);
 					city = JSON.parse(response.body).name;
-					// console.log(city);
 
 
 					tempInCelsius = toCelsiusfromKelvin(temp).toFixed(2);
@@ -103,13 +126,8 @@ function weatherBot() {
 					
 
 					var reply = '@' + from + ' Weather in ' + city + ':\n' + condition + '\nTemp: ' + tempInCelsius + ' °C / ' + tempInFarenheit + ' °F\nHumidity: ' + humidity + '%\n#GetWeather'
-					console.log(reply);
 
-					if(!debug)
-						tweetIt(reply, statusId, statusIdStr);
-					else {
-						console.log(reply, statusId, statusIdStr);
-					}
+					tweetIt(reply, statusId, statusIdStr);
 
 
 					function toCelsiusfromKelvin(temp) {
@@ -122,40 +140,18 @@ function weatherBot() {
 
 				}
 
-				function error() {
-					console.log(error);
-					var reply = '@' + from + ' Sorry, there seems to be some error'
-					if(!debug)
-						tweetIt(reply, statusId, statusIdStr);
-				}
-
 		});
 		}
-	}
 }
 
-weatherBot();
 
 
-
-
-
-function quoteBot() {
-	//Quote Bot
-	//Setting up a status's stream
-	var stream = T.stream('statuses/filter', { track: quoteKeyword });
-
-	//Anytime someone tweets
-	stream.on('tweet', tweetEvent);
-
-
-	function tweetEvent(eventMsg) {
+function quoteBot(eventMsg) {
 
 		let twitterName = eventMsg.user.screen_name;
 		
-		if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds')
-			gotTweet();
-
+		if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds') gotTweet();
+		else console.log("It was just me!")
 
 		function gotTweet() {
 			var status = eventMsg.text;
@@ -169,7 +165,8 @@ function quoteBot() {
 
 			function requestCall() {
 				request("https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1", function(error, response, body) {
-					processRequest();
+					if(body) processRequest();
+					else if(error) error(error, statusId, statusIdStr)
 
 				function processRequest() {
 					var quote = JSON.parse(body)[0].content;
@@ -183,118 +180,73 @@ function quoteBot() {
 					var author = JSON.parse(body)[0].title.slice(0, -1);
 					// console.log(author)
 					var reply = '@' + from + '\n' + quote + '\n— ' + author +'\n#RandomQuote'
-					console.log(reply);
 
 
 					if(reply.length>140)
 						requestCall();
-					else if(!debug)
-						tweetIt(reply, statusId, statusIdStr);
-					else {
-						console.log(reply, statusId, statusIdStr);
-					}
-
+					else tweetIt(reply, statusId, statusIdStr);
 				}
 
 		});
 			}
 		}
-	}
 }
 
-quoteBot();
 
 
 
 
+// function pnrBot(eventMsg) {
 
-function pnrBot() {
-		//PNR Bot
-	//Setting up a status's stream
-	var stream = T.stream('statuses/filter', { track: pnrKeyword });
+// 	let twitterName = eventMsg.user.screen_name;
+	
+// 	if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds')
+// 		gotTweet();
 
-	//Anytime someone tweets
-	stream.on('tweet', tweetEvent);
+// 	function gotTweet() {
+// 		var status = eventMsg.text;
 
+// 		var statusId = eventMsg.id;
+// 		var statusIdStr = eventMsg.id_str;
+// 		var from = eventMsg.user.screen_name;
 
-	function tweetEvent(eventMsg) {
+// 		var pnr = '';
 
-		let twitterName = eventMsg.user.screen_name;
-		
-		if(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds')
-			gotTweet();
+// 		if(debug)
+// 			pnr = '8355016394'
 
-		function gotTweet() {
-			var status = eventMsg.text;
-
-			var statusId = eventMsg.id;
-			var statusIdStr = eventMsg.id_str;
-			var from = eventMsg.user.screen_name;
-
-			var pnr = '';
-
-			if(debug)
-				pnr = '8355016394'
+// 		requestCall();
 
 
+// 		function requestCall() {
+// 			var data = {
+// 				"X-Mashape-Key": "Sc76wnwIkwmshTWqGn9DGqNw7tvmp1qDC6BjsnQdK4IU3ZdCJZ",
+// 				"Accept": "application/json"
+// 			}
 
-			requestCall();
+// 			request.post("https://indianrailways.p.mashape.com/findstations.php?station=delhi", data, function(result) {
+// 				console.log(result.status, result.headers, result.body);
 
-
-			function requestCall() {
-				var data = {
-					"X-Mashape-Key": "Sc76wnwIkwmshTWqGn9DGqNw7tvmp1qDC6BjsnQdK4IU3ZdCJZ",
-					"Accept": "application/json"
-				}
-
-				request.post("https://indianrailways.p.mashape.com/findstations.php?station=delhi", data, function(result) {
-					console.log(result.status, result.headers, result.body);
-
-				function processRequest() {
-				
-					// console.log(quote);
-					var author = JSON.parse(body)[0].title.slice(0, -1);
-					// console.log(author)
-					var reply = '@' + from + '\n' + quote + '\n— ' + author +'\n#RandomQuote'
-					console.log(reply);
+// 			function processRequest() {
+			
+// 				// console.log(quote);
+// 				var author = JSON.parse(body)[0].title.slice(0, -1);
+// 				// console.log(author)
+// 				var reply = '@' + from + '\n' + quote + '\n— ' + author +'\n#RandomQuote'
+// 				console.log(reply);
 
 
-					if(reply.length>140)
-						requestCall();
-					else if(!debug)
-						tweetIt(reply, statusId, statusIdStr);
-					else {
-						tweetIt(reply, statusId, statusIdStr);
-					}
+// 				if(reply.length>140)
+// 					requestCall();
+// 				else tweetIt(reply, statusId, statusIdStr);
 
-				}
+// 			}
 
-		});
-			}
-		}
-	}
-}
-
-// pnrBot();
-
-
-
-
-function tweetIt(text, statusId, statusIdStr) {
-	var tweet = {
-		in_reply_to_status_id: statusId,
-		in_reply_to_status_id_str: statusIdStr,
-		status: text
-	}
-	console.log(tweet);
-	T.post('statuses/update', tweet, tweeted);
-
-	function tweeted(err, data, response) {
-		if (err) {
-			console.log(err);
-			console.log(data);
-		} else {
-			console.log(data);
-		}
-	}
-}
+// 			}, function(error) {
+// 				if (error) {
+// 					error(error, statusId, statusIdStr)
+// 				}
+// 			});
+// 		}
+// 	}
+// }
