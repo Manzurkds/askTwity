@@ -4,7 +4,7 @@ console.log("AskTwity has started");
 var request = require('request');
 var Twit = require('twit');
 
-var debug = false;
+var debug = true;
 
 if(debug == true) {
     var config = require('./config')
