@@ -177,7 +177,7 @@ function quoteBot(eventMsg) {
 					quote = quote.replace(/&#8211;/g, '_');
 					quote = quote.replace(/<[^>]+>/g, '');
 					// console.log(quote);
-					var author = JSON.parse(body)[0].title.slice(0, -1);
+					var author = JSON.parse(body)[0].title;
 					// console.log(author)
 					var reply = '@' + from + '\n' + quote + '\n— ' + author +'\n#RandomQuote'
 
