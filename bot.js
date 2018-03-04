@@ -88,13 +88,6 @@ function sendTweet(text, statusId, statusIdStr) {
 	}
 }
 
-function error(error, statusId, statusIdStr) {
-	console.log(error);
-	const reply = `@${from} Sorry, there seems to be some error`;
-		
-	sendTweet(reply, statusId, statusIdStr);
-}
-
 
 function weatherBot(eventMsg, tweetObject) {
 
@@ -106,9 +99,12 @@ function weatherBot(eventMsg, tweetObject) {
 
 	let condition, temp, humidity
 
-	request(`http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${config.open_weather_API}`, function(error, response, body) {
+	request(`http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${config.open_weather_API}`, function(err, response, body) {
 
-		if(error) error(error, tweetObject.statusId, tweetObject.statusIdStr);
+		if (err) {
+			const reply = `@${tweetObject.from} Sorry, there seems to be some error`;
+			sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
+		}
 		else {
 			condition = JSON.parse(response.body).weather[0].main;
 			temp = JSON.parse(response.body).main.temp;
@@ -134,10 +130,16 @@ function quoteBot(eventMsg, tweetObject) {
 
 	requestCall();
 
+	let retry = 0
 
 	function requestCall() {
-		request("https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1", function(error, response, body) {
-			if(error) error(error, tweetObject.statusId, tweetObject.statusIdStr)
+		request("https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1", function(err, response, body) {
+			if(err) {
+				if(retry < 5) {
+					retry++
+					requestCall()
+				}
+			}
 			else {
 				let quote = JSON.parse(body)[0].content;
 				quote = quote.replace(/&#8217;|&#8216;|&#8220;|&#8221;|&#8211;/g, "'").replace(/<[^>]+>/g, '');
@@ -147,8 +149,7 @@ function quoteBot(eventMsg, tweetObject) {
 				const reply = `@${tweetObject.from} \n${quote}— ${author} \n\n#RandomQuote`
 
 
-				if(reply.length>140)
-					requestCall();
+				if(reply.length>140) requestCall()
 				else sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
 			}
 	});
@@ -193,9 +194,10 @@ function quoteBot(eventMsg, tweetObject) {
 
 // 		}
 
-// 		}, function(error) {
-// 			if (error) {
-// 				error(error, tweetObject.statusId, tweetObject.statusIdStr)
+// 		}, function(err) {
+// 			if (err) {
+//              const reply = `@${tweetObject.from} Sorry, there seems to be some error`;
+// 				sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
 // 			}
 // 		});
 // 	}
