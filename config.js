@@ -1,4 +1,4 @@
-const environment = 'staging';
+const environment = process.env.environment || 'development'
 // development, staging or production
 
 console.log("Running in ", environment)
