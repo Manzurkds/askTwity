@@ -67,26 +67,24 @@ function onTweetReceive(eventMsg, bot) {
 }
 
 
-function tweetIt(text, statusId, statusIdStr) {
+function sendTweet(text, statusId, statusIdStr) {
 
 	var tweet = {
 		in_reply_to_status_id: statusId,
 		in_reply_to_status_id_str: statusIdStr,
 		status: text
 	}
-	console.log("Tweet Object is: ", tweet);
+	console.log("Tweet Object to be send: ", tweet);
 
 	if(config.environment === 'production' || config.environment === 'staging') {
-		T.post('statuses/update', tweet, tweeted);
-	
-		function tweeted(err, data, response) {
+		T.post('statuses/update', tweet, (err, data, response) => {
 			if (err) {
 				console.log(err);
 				console.log(data);
 			} else {
 				console.log(data);
 			}
-		}
+		});
 	}
 }
 
@@ -94,7 +92,7 @@ function error(error, statusId, statusIdStr) {
 	console.log(error);
 	const reply = `@${from} Sorry, there seems to be some error`;
 		
-	tweetIt(reply, statusId, statusIdStr);
+	sendTweet(reply, statusId, statusIdStr);
 }
 
 
@@ -124,7 +122,7 @@ function weatherBot(eventMsg, tweetObject) {
 
 			const reply = `@${tweetObject.from} Weather in ${city}:\n ${condition} \nTemp: ${tempInCelsius} °C / ${tempInFarenheit} °F\nHumidity: ${humidity}% \n#GetWeather`
 
-			tweetIt(reply, tweetObject.statusId, tweetObject.statusIdStr);
+			sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
 		}
 
 	});
@@ -141,22 +139,17 @@ function quoteBot(eventMsg, tweetObject) {
 		request("https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1", function(error, response, body) {
 			if(error) error(error, tweetObject.statusId, tweetObject.statusIdStr)
 			else {
-				var quote = JSON.parse(body)[0].content;
-				quote = quote.replace(/&#8217;/g, "'");
-				quote = quote.replace(/&#8216;/g, "'");
-				quote = quote.replace(/&#8220;/g, '"');
-				quote = quote.replace(/&#8221;/g, '"');
-				quote = quote.replace(/&#8211;/g, '_');
-				quote = quote.replace(/<[^>]+>/g, '');
+				let quote = JSON.parse(body)[0].content;
+				quote = quote.replace(/&#8217;|&#8216;|&#8220;|&#8221;|&#8211;/g, "'").replace(/<[^>]+>/g, '');
 				// console.log(quote);
-				var author = JSON.parse(body)[0].title;
+				const author = JSON.parse(body)[0].title;
 				// console.log(author)
-				var reply = `@${tweetObject.from} \n${quote} \n— ${author} \n#RandomQuote`
+				const reply = `@${tweetObject.from} \n${quote}— ${author} \n\n#RandomQuote`
 
 
 				if(reply.length>140)
 					requestCall();
-				else tweetIt(reply, tweetObject.statusId, tweetObject.statusIdStr);
+				else sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
 			}
 	});
 	}
@@ -196,7 +189,7 @@ function quoteBot(eventMsg, tweetObject) {
 
 // 			if(reply.length>140)
 // 				requestCall();
-// 			else tweetIt(reply, tweetObject.statusId, tweetObject.statusIdStr);
+// 			else sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
 
 // 		}
 
