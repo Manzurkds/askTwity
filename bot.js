@@ -19,6 +19,7 @@ const bots = {
 	pnr: 'pnrBot'
 }
 
+let previousTwitter;
 
 const weatherStream = T.stream('statuses/filter', { track: weatherKeyword });
 weatherStream.on('tweet', (event) => {
@@ -43,7 +44,12 @@ function onTweetReceive(eventMsg, bot) {
 	if(!(twitterName != 'AskTwity' && twitterName != 'ask_twity' && twitterName != 'Manzurkds')) {
 		console.log("It was just me")
 		return
+	} else if(twitterName === previousTwitter) {
+		console.log("Oops someone is replicating you!")
+		return
 	}
+
+	previousTwitter = twitterName
 
 	const details = {
 		from: twitterName,
@@ -119,6 +125,7 @@ function weatherBot(eventMsg, tweetObject) {
 			const reply = `@${tweetObject.from} Weather in ${city}:\n ${condition} \nTemp: ${tempInCelsius} °C / ${tempInFarenheit} °F\nHumidity: ${humidity}% \n#GetWeather`
 
 			sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
+			clearPreviousTwitter()
 		}
 
 	});
@@ -150,7 +157,10 @@ function quoteBot(eventMsg, tweetObject) {
 
 
 				if(reply.length>140) requestCall()
-				else sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
+				else {
+					sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
+					clearPreviousTwitter()
+				}
 			}
 	});
 	}
@@ -190,7 +200,10 @@ function quoteBot(eventMsg, tweetObject) {
 
 // 			if(reply.length>140)
 // 				requestCall();
-// 			else sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
+// 			else {
+//				sendTweet(reply, tweetObject.statusId, tweetObject.statusIdStr);
+//				clearPreviousTwitter()
+//			}
 
 // 		}
 
@@ -202,6 +215,13 @@ function quoteBot(eventMsg, tweetObject) {
 // 		});
 // 	}
 // }
+
+
+function clearPreviousTwitter() {
+	setTimeout(() => {
+		previousTwitter = ''
+	}, 4000)
+}
 
 function setKeywords(weather, quote, pnr) {
 	weatherKeyword = weather
