@@ -1,4 +1,4 @@
-const environment = 'development';
+const environment = 'staging';
 // development, staging or production
 
 console.log("Running in ", environment)
@@ -16,7 +16,8 @@ if(environment === 'production') {
   // timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
   }
 } else {
-  config = require('./devConfig');
+  config = require('./devConfig')
+  config.environment = environment
 }
 
 module.exports = config
