@@ -4,7 +4,7 @@ const Twit = require('twit');
 const config = require('./config');
 const helperFunctions = require('./helperFunctions');
 
-const breathingTime = 36;
+const breathingTime = 36 * 1000;
 let isBreathing = false;
 
 var weatherKeyword, quoteKeyword, pnrKeyword
@@ -100,6 +100,8 @@ function sendTweet(text, statusId, statusIdStr) {
 				console.log(data);
 			}
 		});
+	} else {
+		startBreathing();
 	}
 }
 
@@ -239,10 +241,12 @@ function setKeywords(weather, quote, pnr) {
 }
 
 function startBreathing() {
-	isBreathing = true;
-	setTimeout(() => {
-		isBreathing = false;
-	}, 36);
+	if(!isBreathing) {
+		isBreathing = true;
+		setTimeout(() => {
+			isBreathing = false;
+		}, breathingTime);
+	}
 }
 
 function canSendTweet() {
