@@ -246,5 +246,5 @@ function startBreathing() {
 }
 
 function canSendTweet() {
-	return isBreathing;
+	return !isBreathing;
 }
