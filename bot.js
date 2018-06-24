@@ -1,8 +1,11 @@
 console.log("AskTwity has started");
-const request = require('request')
-const Twit = require('twit')
-const config = require('./config')
-const helperFunctions = require('./helperFunctions')
+const request = require('request');
+const Twit = require('twit');
+const config = require('./config');
+const helperFunctions = require('./helperFunctions');
+
+const breathingTime = 36;
+let isBreathing = false;
 
 var weatherKeyword, quoteKeyword, pnrKeyword
 if(config.environment === 'production' || config.environment === 'staging') {
@@ -75,6 +78,11 @@ function onTweetReceive(eventMsg, bot) {
 
 function sendTweet(text, statusId, statusIdStr) {
 
+	if(!canSendTweet()) {
+		console.log("Please, dont abuse me, let me breath!");
+		return;
+	}
+
 	var tweet = {
 		in_reply_to_status_id: statusId,
 		in_reply_to_status_id_str: statusIdStr,
@@ -88,6 +96,7 @@ function sendTweet(text, statusId, statusIdStr) {
 				console.log(err);
 				console.log(data);
 			} else {
+				startBreathing();
 				console.log(data);
 			}
 		});
@@ -227,4 +236,15 @@ function setKeywords(weather, quote, pnr) {
 	weatherKeyword = weather
 	quoteKeyword = quote
 	pnrKeyword = pnr
+}
+
+function startBreathing() {
+	isBreathing = true;
+	setTimeout(() => {
+		isBreathing = false;
+	}, 36);
+}
+
+function canSendTweet() {
+	return isBreathing;
 }
